@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view( 'auth.login');
 });
 //=================AUTH======================================================
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
@@ -14,6 +14,7 @@ Route::get('/register', [AuthController::class, 'register'])->name('auth.registe
 Route::post('/register', [AuthController::class, 'store'])->name('auth.store');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgotPassword');
 Route::post('/forgot-password', [AuthController::class,'reset'])->name('auth.reset');
+Route::post('/logout', [AuthController::class,'logout']);
 //================= MODULES=================================================
 Route::get('/dashboard', function(){
     return view('dashboard');

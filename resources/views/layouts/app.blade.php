@@ -28,9 +28,10 @@
         <!-- Main content -->
         <main class="flex-1 p-8 overflow-auto relative">
             <div class="flex justify-end mb-6 space-x-4">
-                <a href="{{ route('auth.login') }}"
-                    class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">
-                    Log In</a>
+                <form method="POST" action="/logout">
+                @csrf
+                <button type="submit" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">Log Out</button>
+                </form>
                 <a href="{{ route('auth.register') }}"
                     class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">
                     Sign Up</a>
