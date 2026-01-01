@@ -1,5 +1,6 @@
 
-# Integrated Application Development Framework : Charity Management System
+# Integrated Application Development Framework : 
+**Charity Management System**
 
 A **web application** built with **Laravel** to manage donors, donations, and user accounts. The app uses **MVC architecture** 
 
