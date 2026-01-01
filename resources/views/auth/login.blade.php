@@ -12,9 +12,10 @@
             </div>
         @endif
 
-        <form action="{{ route('login') }}" method="POST" class="space-y-4">
+        <form action="{{ route('auth.authenticate') }}" method="POST" class="space-y-4">
             @csrf
-            <input type="email" name="email" placeholder="Email"
+
+            <input type="text" name="email" placeholder="Email"
                 class="w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required>
 
@@ -27,8 +28,8 @@
         </form>
 
         <div class="mt-4 text-center text-gray-300">
-            <a href="{{ route('register') }}" class="underline hover:text-white">Sign Up</a> |
-            <a href="{{ route('forgot-password') }}" class="underline hover:text-white">Forgot Password?</a>
+            <a href="{{ route('auth.register') }}" class="underline hover:text-white">Sign Up</a> |
+            <a href="{{ route('auth.forgotPassword') }}" class="underline hover:text-white">Forgot Password?</a>
         </div>
     </div>
 @endsection

@@ -14,7 +14,7 @@
             <div class="mb-4 text-red-400">{{ $errors->first() }}</div>
         @endif
 
-        <form action="{{ route('forgot-password') }}" method="POST" class="space-y-4">
+        <form action="{{ route('auth.reset') }}" method="POST" class="space-y-4">
             @csrf
 
             <input type="email" name="email" placeholder="Email"
@@ -35,7 +35,7 @@
         </form>
 
         <div class="mt-4 text-center text-gray-300">
-            <a href="{{ route('login') }}" class="underline hover:text-white">Back to Login</a>
+            <a href="{{ route('auth.login') }}" class="underline hover:text-white">Back to Login</a>
         </div>
     </div>
 @endsection

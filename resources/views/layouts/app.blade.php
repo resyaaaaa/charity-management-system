@@ -28,10 +28,10 @@
         <!-- Main content -->
         <main class="flex-1 p-8 overflow-auto relative">
             <div class="flex justify-end mb-6 space-x-4">
-                <a href="{{ route('login') }}"
+                <a href="{{ route('auth.login') }}"
                     class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">
                     Log In</a>
-                <a href="{{ route('register') }}"
+                <a href="{{ route('auth.register') }}"
                     class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">
                     Sign Up</a>
             </div> @yield('content')

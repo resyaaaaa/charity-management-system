@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -15,13 +16,10 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if (auth()->attempt($request->only('email', 'password'))) {
-            return redirect()->intended('/dashboard');
+        if (Auth::attempt($credentials)) {
+            return redirect('/dashboard');
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
@@ -38,36 +36,55 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:6',
         ]);
 
         User::create([
-            'name' => $request->first_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'=> $request->name,
+            'email'=> $request->email,
+            'password'=> Hash::make($request->password),
         ]);
 
-        return redirect()->route('login')->with('success', 'Account created successfully');
+        return redirect()->route('auth.login')->with('success', 'Account created successfully');
     }
+
+    /**
+     * Reset password
+     */
 
     public function forgotPassword()
     {
         return view('auth.forgot-password');
     }
 
-    public function resetPassword(Request $request)
+    public function reset(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users, email',
-            'password' => 'required|min:6|confirmed',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
         ]);
 
         $user = User::where('email', $request->email)->first();
+
+        if (!$user){
+            return back()->withErrors([
+                'email'=>'Email not found'
+            ]);
+        }
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('login')->with('success', 'Password updated successfully');
+        return redirect()->route('auth.login')->with('success', 'Password reset successfully');
+    }
+
+    /**
+     * Log out
+     */
+
+    public function logout(){
+        Auth::logout();
+        return redirect()->route('auth.login');
     }
 }
