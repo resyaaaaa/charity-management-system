@@ -20,5 +20,9 @@ Route::get('/dashboard', function(){
     return view('dashboard');
 })->middleware('auth');
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('donors', DonorController::class);
+});
+
 Route::resource('donors', DonorController::class);
 Route::resource('donations', DonationController::class);
