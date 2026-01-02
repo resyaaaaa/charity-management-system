@@ -11,6 +11,14 @@
             <input type="text" name="name" placeholder="User Name"
                 class="w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required>
+            <select name="role"
+                class="w-full px-4 py-2 rounded-lg bg-white/20 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+                required>
+                <option value="" disabled selected>Select role</option>
+                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
+            </select>
+
 
             <input type="email" name="email" placeholder="Email"
                 class="w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"

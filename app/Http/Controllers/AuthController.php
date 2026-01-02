@@ -19,7 +19,8 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect('/dashboard');
+            $request->session()->regenerate();
+            return redirect('/redirect');
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
@@ -37,12 +38,14 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'role'=>'required|in:admin,staff',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
         ]);
 
         User::create([
             'name'=> $request->name,
+            'role'=> $request->role,
             'email'=> $request->email,
             'password'=> Hash::make($request->password),
         ]);

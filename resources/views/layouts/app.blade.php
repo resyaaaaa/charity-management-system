@@ -14,7 +14,7 @@
     <div class="flex h-screen bg-black/40 backdrop-blur-sm">
         <!-- Sidebar -->
         <aside class="w-64 bg-black/30 backdrop-blur-md text-white hidden md:block shadow-lg">
-            <div class="p-6 font-bold text-xl border-b border-white/20">Charity Management</div>
+            <div class="p-6 font-bold text-xl border-b border-white/20">Charity Management System</div>
             <nav class="mt-6 space-y-2">
                 <a href="{{ url('/dashboard') }}"
                     class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Dashboard</a>

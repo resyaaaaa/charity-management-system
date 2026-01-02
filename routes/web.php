@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 Route::get('/', function () {
     return view( 'auth.login');
 });
+
 //=================AUTH======================================================
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('auth.authenticate');
@@ -15,10 +16,17 @@ Route::post('/register', [AuthController::class, 'store'])->name('auth.store');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgotPassword');
 Route::post('/forgot-password', [AuthController::class,'reset'])->name('auth.reset');
 Route::post('/logout', [AuthController::class,'logout']);
-//================= MODULES=================================================
+//================= DASHBOARD=================================================
 Route::get('/dashboard', function(){
-    return view('dashboard');
+    $user = Auth::user();
+
+    if($user->role=='admin'){
+    return redirect('/dashboard-admin');
+    }
+    return redirect ('/dashboard-staff');
 })->middleware('auth');
+
+//================= MODULES=================================================
 
 Route::resource('donors', DonorController::class);
 Route::resource('donations', DonationController::class);
