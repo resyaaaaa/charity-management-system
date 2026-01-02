@@ -17,13 +17,18 @@ Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name(
 Route::post('/forgot-password', [AuthController::class,'reset'])->name('auth.reset');
 Route::post('/logout', [AuthController::class,'logout']);
 //================= DASHBOARD=================================================
+
+
 Route::get('/dashboard', function(){
     $user = Auth::user();
 
-    if($user->role=='admin'){
-    return redirect('/dashboard-admin');
+    if($user->role==='admin'){
+    return redirect('dashboard.admin');
     }
-    return redirect ('/dashboard-staff');
+    elseif ($user->role=== 'staff'){
+    return redirect ('dashboard.staff');
+    }
+    abort(403);
 })->middleware('auth');
 
 //================= MODULES=================================================
