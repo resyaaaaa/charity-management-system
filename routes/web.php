@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\DonorController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -19,17 +21,11 @@ Route::post('/logout', [AuthController::class,'logout']);
 //================= DASHBOARD=================================================
 
 
-Route::get('/dashboard', function(){
-    $user = Auth::user();
-
-    if($user->role==='admin'){
-    return redirect('dashboard.admin');
-    }
-    elseif ($user->role=== 'staff'){
-    return redirect ('dashboard.staff');
-    }
-    abort(403);
-})->middleware('auth');
+// Dashboards
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('dashboard.admin');
+    Route::get('/staff/dashboard', [StaffController::class, 'index'])->name('dashboard.staff');
+});
 
 //================= MODULES=================================================
 

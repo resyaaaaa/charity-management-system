@@ -14,20 +14,26 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request, User $user)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
 
-            if($user->role === 'admin'){
+            if ($user->role === 'admin') {
                 return redirect()->route('dashboard.admin');
-            }
-            if($user->role === 'staff'){
+            } elseif ($user->role === 'staff') {
                 return redirect()->route('dashboard.staff');
             }
+            Auth::logout();
+            return redirect()->withErrors(['email'=> 'Your role is not recognized']);
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
