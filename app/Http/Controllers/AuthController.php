@@ -14,12 +14,26 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request, User $user)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect('/dashboard');
+            $request->session()->regenerate();
+            $user = Auth::user();
+
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard.admin');
+            } elseif ($user->role === 'staff') {
+                return redirect()->route('dashboard.staff');
+            }
+            Auth::logout();
+            return redirect()->withErrors(['email'=> 'Your role is not recognized']);
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
@@ -37,12 +51,14 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'role'=>'required|in:admin,staff',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
         ]);
 
         User::create([
             'name'=> $request->name,
+            'role'=> $request->role,
             'email'=> $request->email,
             'password'=> Hash::make($request->password),
         ]);

@@ -1,15 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Admin Dashboard</h1>
-
-        <!-- Add Donor Button -->
-        <a href="{{ route('donors.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition">
-            + Add Donor
-        </a>
-    </div>
+    <h1 class="text-3xl font-bold mb-6">Welcome Admin</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Card 1 -->
