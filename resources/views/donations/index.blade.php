@@ -1,35 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-200">Donations</h1>
-    <a href="#" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition">Add Donation</a>
+<div class="max-w-7xl mx-auto">
+
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-bold">Donations</h1>
+        <a href="{{ route('donations.create') }}"
+            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">Add Donation</a>
+    </div>
+
+    @if(session('success'))
+        <div class="bg-green-600 text-white px-4 py-2 rounded-lg mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <!-- Search & Filter Form -->
+    <form method="GET" action="{{ route('donations.index') }}" class="flex flex-col sm:flex-row gap-4 mb-6">
+        <input type="text" name="donor" placeholder="Search by Donor"
+            value="{{ request('donor') }}"
+            class="p-2 rounded-lg bg-gray-800 text-white flex-1">
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">Filter</button>
+    </form>
+
+<!-- Donation Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    @foreach($donations as $donation)
+        <div class="bg-black/30 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+            <h2 class="text-xl font-semibold mb-2">{{ $donation->donor->name }}</h2>
+            <p><span class="font-bold">Amount:</span> ${{ $donation->amount }}</p>
+            <p><span class="font-bold">Type:</span> {{ $donation->donation_type }}</p>
+            </p>
+            <p><span class="font-bold">Date:</span> {{ $donation->donation_date->format('Y-m-d') }}</p>
+
+            <div class="flex justify-between mt-4">
+                <a href="{{ route('donations.edit', $donation->id) }}"
+                    class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded-lg transition">Edit</a>
+                <form action="{{ route('donations.destroy', $donation->id) }}" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg transition"
+                        onclick="return confirm('Are you sure you want to delete this donation?')">Delete</button>
+                </form>
+            </div>
+        </div>
+    @endforeach
 </div>
 
-<div class="overflow-x-auto rounded-xl shadow-lg bg-white/10 backdrop-blur-md">
-    <table class="min-w-full divide-y divide-white/20 text-gray-200">
-        <thead class="bg-white/5">
-            <tr>
-                <th class="px-6 py-3 text-left uppercase tracking-wider">Donor</th>
-                <th class="px-6 py-3 text-left uppercase tracking-wider">Amount</th>
-                <th class="px-6 py-3 text-left uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-left uppercase tracking-wider">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-white/10">
-            @for ($i = 0; $i < 5; $i++)
-            <tr class="hover:bg-white/10 transition">
-                <!--Change here for backend-->
-                <td class="px-6 py-4">Donor {{ $i+1 }}</td>
-                <td class="px-6 py-4">RM{{ rand(50,500) }}</td>
-                <td class="px-6 py-4">2025-12-{{ 10+$i }}</td>
-                <td class="px-6 py-4 flex space-x-3">
-                    <a href="#" class="text-blue-400 hover:underline">Edit</a>
-                    <a href="#" class="text-red-400 hover:underline">Delete</a>
-                </td>
-            </tr>
-            @endfor
-        </tbody>
-    </table>
+<!-- Pagination -->
+<div class="mt-6">
+    {{ $donations->links('pagination::tailwind') }}
+</div>
+
 </div>
 @endsection

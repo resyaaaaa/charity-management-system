@@ -29,5 +29,25 @@ Route::middleware('auth')->group(function () {
 
 //================= MODULES=================================================
 
-Route::resource('donors', DonorController::class);
-Route::resource('donations', DonationController::class);
+Route::middleware(['auth', 'staff'])->group(function () {
+
+    // List donations
+    Route::get('/donations', [DonationController::class, 'index'])
+        ->name('donations.index');
+
+    // Create
+    Route::get('/donations/create', [DonationController::class, 'create'])
+        ->name('donations.create');
+    Route::post('/donations', [DonationController::class, 'store'])
+        ->name('donations.store');
+
+    // Edit
+    Route::get('/donations/{donation}/edit', [DonationController::class, 'edit'])
+        ->name('donations.edit');
+    Route::put('/donations/{donation}', [DonationController::class, 'update'])
+        ->name('donations.update');
+
+    // Delete
+    Route::delete('/donations/{donation}', [DonationController::class, 'destroy'])
+        ->name('donations.destroy');
+});

@@ -23,20 +23,22 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            $user = Auth::user();
+if (Auth::attempt($credentials)) {
+    $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect()->route('dashboard.admin');
-            } elseif ($user->role === 'staff') {
-                return redirect()->route('dashboard.staff');
-            }
-            Auth::logout();
-            return redirect()->withErrors(['email'=> 'Your role is not recognized']);
-        }
+    if ($user->role === 'admin') {
+        return redirect()->route('dashboard.admin');
+    } elseif ($user->role === 'staff') {
+        return redirect()->route('dashboard.staff');
+    }
 
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
+    // User role not recognized
+    Auth::logout();
+    return redirect()->back()->withErrors(['email' => 'Your role is not recognized']);
+}
+
+// Invalid credentials
+return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
     }
 
     /**
