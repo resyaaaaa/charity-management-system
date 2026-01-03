@@ -20,11 +20,6 @@ public function index(Request $request)
         });
     }
 
-    // Filter by campaign
-    if ($request->filled('campaign')) {
-        $query->where('campaign', 'like', '%' . $request->campaign . '%');
-    }
-
 
     // Paginate the results, 9 per page
     $donations = $query->orderBy('donation_date', 'desc')->paginate(9)->withQueryString();

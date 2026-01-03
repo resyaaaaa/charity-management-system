@@ -18,6 +18,10 @@ class Donation extends Model
         'notes',
     ];
 
+    protected $casts = [
+    'donation_date' => 'datetime',
+    ];
+
     // Relation to donor
     public function donor()
     {

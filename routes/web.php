@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view( 'auth.login');
@@ -20,8 +21,6 @@ Route::post('/forgot-password', [AuthController::class,'reset'])->name('auth.res
 Route::post('/logout', [AuthController::class,'logout']);
 //================= DASHBOARD=================================================
 
-
-// Dashboards
 Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('dashboard.admin');
     Route::get('/staff/dashboard', [StaffController::class, 'index'])->name('dashboard.staff');
@@ -29,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
 //================= MODULES=================================================
 
+//=================DONATIONS===============================================
 Route::middleware(['auth', 'staff'])->group(function () {
 
     // List donations
@@ -51,3 +51,17 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::delete('/donations/{donation}', [DonationController::class, 'destroy'])
         ->name('donations.destroy');
 });
+
+//=========================DONORS=================================================
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('donors', DonorController::class);
+});
+Route::middleware(['auth', 'role:staff'])->get('donors', [DonorController::class, 'index']);
+Route::get('donors/{donor}/delete', [DonorController::class, 'delete'])
+     ->name('donors.delete')
+     ->middleware(['auth','role:admin']);
+
+     
+Route::resource('donors', DonorController::class);
+
+Route::resource('donations', DonationController::class);

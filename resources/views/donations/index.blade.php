@@ -29,11 +29,12 @@
     @foreach($donations as $donation)
         <div class="bg-black/30 backdrop-blur-sm rounded-lg p-6 shadow-lg">
             <h2 class="text-xl font-semibold mb-2">{{ $donation->donor->name }}</h2>
-            <p><span class="font-bold">Amount:</span> ${{ $donation->amount }}</p>
+            <p><span class="font-bold">Amount:</span> RM{{ $donation->amount }}</p>
             <p><span class="font-bold">Type:</span> {{ $donation->donation_type }}</p>
-            </p>
             <p><span class="font-bold">Date:</span> {{ $donation->donation_date->format('Y-m-d') }}</p>
+            <p><span class="font-bold">Notes:</span> {{ $donation->notes ?? '-' }}</p>
 
+        
             <div class="flex justify-between mt-4">
                 <a href="{{ route('donations.edit', $donation->id) }}"
                     class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded-lg transition">Edit</a>

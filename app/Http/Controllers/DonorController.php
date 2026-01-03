@@ -10,11 +10,24 @@ class DonorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $donors = Donor::all(); // fetch all donors
-        return view('donors.index', compact('donors'));
+    public function index(Request $request)
+{
+    $query = Donor::orderBy('name', 'asc'); // Sort A → Z
+
+    // Apply search if a keyword exists
+    if ($request->has('search')) {
+        $keyword = $request->input('search');
+        $query->where('name', 'like', "%{$keyword}%")
+              ->orWhere('email', 'like', "%{$keyword}%")
+              ->orWhere('phone', 'like', "%{$keyword}%")
+              ->orWhere('affiliation', 'like', "%{$keyword}%");
     }
+
+    $donors = $query->get();
+
+    return view('donors.index', compact('donors'));
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,22 +43,17 @@ class DonorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'=> 'required',
-            'email'=> 'required|email|unique:donors',
-            'phone'=> 'required',
+            'affiliation' => 'required|in:personal,company',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:donors',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:500',
         ]);
 
         Donor::create($request->all());
-        return redirect()->route('donors.index')
-        ->with('success','Donor added successfully');
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Donor $donor)
-    {
-        //
+        return redirect()->route('donors.index')
+                         ->with('success','Donor added successfully');
     }
 
     /**
@@ -60,17 +68,24 @@ class DonorController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Donor $donor)
-    {
-        $request->validate([
-            'name'=> 'required',
-            'email'=> 'required|email|unique:donors, email,'.$donor->id,
-            'phone'=> 'required',
-        ]);
+{
+    $request->validate([
+        'affiliation' => 'required|in:personal,company',
+        'name'        => 'required|string|max:255',
+        'email'       => 'required|email|unique:donors,email,'.$donor->id,
+        'phone'       => 'required|string|max:20',
+        'address'     => 'required|string|max:500',
+    ]);
 
-        $donor->update($request->all());
-        return redirect()->route('donors.index')
-        ->with('success','Donor updated successfully');
-    }
+    // Only update validated fields
+    $donor->update($request->only(['affiliation','name','email','phone','address']));
+
+    // Redirect back to index with success message
+    return redirect()->route('donors.index')
+                     ->with('success','Donor updated successfully!');
+}
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -79,6 +94,6 @@ class DonorController extends Controller
     {
         $donor->delete();
         return redirect()->route('donors.index')
-        ->with('success','Donor deleted successfully');
+                         ->with('success','Donor deleted successfully');
     }
 }
