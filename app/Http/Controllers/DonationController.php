@@ -3,78 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Models\Donor;
 use Illuminate\Http\Request;
 
 class DonationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $donations = Donation::all(); // fetch all donations
-        return view('donations.index', compact('donations'));
+    // List all donations
+public function index(Request $request)
+{
+    $query = Donation::with('donor');
+
+    // Filter by donor name
+    if ($request->filled('donor')) {
+        $query->whereHas('donor', function($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->donor . '%');
+        });
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
+    // Paginate the results, 9 per page
+    $donations = $query->orderBy('donation_date', 'desc')->paginate(9)->withQueryString();
+
+    return view('donations.index', compact('donations'));
+}
+
+
+
+    // Show form to create donation
     public function create()
     {
-        return view('donations.create', compact('donations', 'donors'));  }
+        $donors = Donor::all();
+        return view('donations.create', compact('donors'));
+    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store new donation
     public function store(Request $request)
     {
         $request->validate([
-            'donor_id'=> 'required|exists:donors,id',
-            'amount'=> 'required|numeric:1',
-            'donation_date'=> 'required|date',
+            'donor_id' => 'required|exists:donors,id',
+            'amount' => 'required|numeric|min:0.01',
+            'donation_type' => 'required|string',
+            'donation_date' => 'required|date',
         ]);
 
         Donation::create($request->all());
-        return redirect()->route('donations.index')->with('success', 'Donations added successfully');
+
+        return redirect()->route('donations.index')->with('success', 'Donation added successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Show a single donation
     public function show(Donation $donation)
     {
-        //
+        return view('donations.show', compact('donation'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Show form to edit donation
     public function edit(Donation $donation)
     {
-        return view('donations.edit', compact('donations', 'donors'));
+        $donors = Donor::all();
+        return view('donations.edit', compact('donation', 'donors'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Update donation
     public function update(Request $request, Donation $donation)
     {
         $request->validate([
-            'donor_id'=> 'required|exists:donors, id',
-            'amount'=> 'required|numeric|min:1',
-            'donation_date'=> 'required|date',
+            'donor_id' => 'required|exists:donors,id',
+            'amount' => 'required|numeric|min:0.01',
+            'donation_type' => 'required|string',
+            'donation_date' => 'required|date',
         ]);
 
         $donation->update($request->all());
-        return redirect()->route('donations.index')->with('success','Donations updated successfully');
+
+        return redirect()->route('donations.index')->with('success', 'Donation updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Delete donation
     public function destroy(Donation $donation)
     {
         $donation->delete();
-        return redirect()->route('donations.index')->with('success','Donation deleted successfully');
+        return redirect()->route('donations.index')->with('success', 'Donation deleted successfully.');
     }
 }
