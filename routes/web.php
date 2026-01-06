@@ -3,6 +3,8 @@ use App\Http\Controllers\DonorController;
 use App\Http\Controllers\DonationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\AidDistributionController;
 
 Route::get('/', function () {
     return view( 'auth.login');
@@ -22,3 +24,12 @@ Route::get('/dashboard', function(){
 
 Route::resource('donors', DonorController::class);
 Route::resource('donations', DonationController::class);
+Route::resource('beneficiaries', BeneficiaryController::class);
+
+
+//=========== BENEFICIARY ================//
+// Home / Dashboard
+Route::get('/beneficiaries', [BeneficiaryController::class, 'index'])->name('beneficiaries.index');
+Route::get('/beneficiaries/verify/{id}', [BeneficiaryController::class, 'verify'])->name('beneficiaries.verify');
+Route::get('/beneficiaries/{id}/distribute', [BeneficiaryController::class, 'distribute'])->name('beneficiaries.distribute');
+Route::post('/beneficiaries/add-aid', [BeneficiaryController::class, 'addAid'])->name('beneficiaries.addAid');

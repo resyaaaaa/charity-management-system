@@ -22,7 +22,9 @@
                     class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Donors</a>
                 <a href="{{ url('/donations') }}"
                     class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Donations</a>
-            </nav>
+                <a href="{{ url('/beneficiaries') }}"
+                    class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Beneficiaries</a>
+                </nav>
         </aside>
 
         <!-- Main content -->
