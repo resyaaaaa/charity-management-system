@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BeneficiaryController;
 
 Route::get('/', function () {
     return view( 'auth.login');
@@ -68,8 +69,11 @@ Route::resource('beneficiaries', BeneficiaryController::class);
 
 
 //=========== BENEFICIARY ================//
-// Home / Dashboard
-Route::get('/beneficiaries', [BeneficiaryController::class, 'index'])->name('beneficiaries.index');
-Route::get('/beneficiaries/verify/{id}', [BeneficiaryController::class, 'verify'])->name('beneficiaries.verify');
-Route::get('/beneficiaries/{id}/distribute', [BeneficiaryController::class, 'distribute'])->name('beneficiaries.distribute');
-Route::post('/beneficiaries/add-aid', [BeneficiaryController::class, 'addAid'])->name('beneficiaries.addAid');
+// Staff: full CRUD except index
+Route::middleware(['auth', 'role:staff'])->group(function () {
+    Route::resource('beneficiaries', BeneficiaryController::class)->except(['index']);
+});
+
+// Authenticated users: index only
+Route::middleware(['auth'])->get('beneficiaries', [BeneficiaryController::class, 'index'])
+    ->name('beneficiaries.index');

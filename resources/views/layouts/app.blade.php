@@ -22,9 +22,11 @@
                     class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Dashboard</a>
                 <a href="{{ url('/donors') }}"
                     class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Donors</a>
-                <a href="{{ url('/donations') }}"
-                    class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Donations</a>
-            </nav>
+               @auth
+                    @if(auth()->user()->role === 'staff')
+                        <a href="{{ url('/donations') }}" class="block px-6 py-3 rounded-lg hover:bg-white/10 transition backdrop-blur-sm">Donations</a>
+                    @endif
+                @endauth
         </aside>
 
         <!-- Main content -->

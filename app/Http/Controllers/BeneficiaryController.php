@@ -2,71 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Beneficiary;
 use Illuminate\Http\Request;
 
 class BeneficiaryController extends Controller
 {
-    public function index(Request $request)
+    // Only allow authenticated users
+    public function __construct()
     {
-        // Store dummy data in session if not exists
-        if (!$request->session()->has('beneficiaries')) {
-            $beneficiaries = [
-                ['id'=>1,'name'=>'Ahmad Bin Ali','type'=>'Individual','category'=>'Food','status'=>'Pending','history'=>[]],
-                ['id'=>2,'name'=>'Siti Binti Omar','type'=>'Individual','category'=>'Medical','status'=>'Pending','history'=>[]],
-                ['id'=>3,'name'=>'Family Tan','type'=>'Family','category'=>'Education','status'=>'Verified','history'=>[]],
-                ['id'=>4,'name'=>'Orphanage Al-Falah','type'=>'Organization','category'=>'Food','status'=>'Verified','history'=>[]],
-            ];
-            $request->session()->put('beneficiaries', $beneficiaries);
-        }
+        $this->middleware('auth');
+        $this->middleware('role:staff')->except('index'); // Staff can CRUD, others can only view
+    }
 
-        $beneficiaries = $request->session()->get('beneficiaries');
+    // List beneficiaries (all users)
+    public function index()
+    {
+        $beneficiaries = Beneficiary::all();
         return view('beneficiaries.index', compact('beneficiaries'));
     }
 
-    // Verify dummy beneficiary
-    public function verify(Request $request, $id)
+    // Show form to create beneficiary
+    public function create()
     {
-        $beneficiaries = $request->session()->get('beneficiaries');
-        foreach ($beneficiaries as &$b) {
-            if ($b['id'] == $id) $b['status'] = 'Verified';
-        }
-        $request->session()->put('beneficiaries', $beneficiaries);
-        return redirect()->route('beneficiaries.index');
+        return view('beneficiaries.create');
     }
 
-    // Show distribute page
-    public function distribute(Request $request, $id)
+    // Store new beneficiary
+    public function store(Request $request)
     {
-        $beneficiaries = $request->session()->get('beneficiaries');
-        $beneficiary = collect($beneficiaries)->firstWhere('id', $id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:Individual,Family,Organization',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'assistance_category' => 'required|in:Low Income,Orphan,Disabled,Disaster Victim',
+        ]);
 
-        // Dummy donations
-        $donations = [
-            ['id'=>1,'donor'=>'Donor 1','amount'=>1000,'type'=>'Cash'],
-            ['id'=>2,'donor'=>'Donor 2','amount'=>500,'type'=>'Goods'],
-            ['id'=>3,'donor'=>'Donor 3','amount'=>750,'type'=>'Cash'],
-        ];
+        Beneficiary::create($validated);
 
-        return view('beneficiaries.distribute', compact('beneficiary','donations'));
+        return redirect()->route('beneficiaries.index')->with('success', 'Beneficiary created successfully!');
     }
 
-    // Add dummy aid distribution
-    public function addAid(Request $request)
+    // Show form to edit
+    public function edit(Beneficiary $beneficiary)
     {
-        $beneficiaries = $request->session()->get('beneficiaries');
-        foreach ($beneficiaries as &$b) {
-            if ($b['id'] == $request->beneficiary_id) {
-                $b['history'][] = [
-                    'date'=>date('Y-m-d'),
-                    'donation_id'=>$request->donation_id,
-                    'amount'=>$request->amount,
-                    'aid_type'=>$request->aid_type,
-                    'remarks'=>$request->remarks,
-                ];
-            }
-        }
-        $request->session()->put('beneficiaries', $beneficiaries);
+        return view('beneficiaries.edit', compact('beneficiary'));
+    }
 
-        return redirect()->route('beneficiaries.distribute', $request->beneficiary_id);
+    // Update beneficiary
+    public function update(Request $request, Beneficiary $beneficiary)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:Individual,Family,Organization',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'assistance_category' => 'required|in:Low Income,Orphan,Disabled,Disaster Victim',
+            'status' => 'required|in:Pending,Verified',
+        ]);
+
+        $beneficiary->update($validated);
+
+        return redirect()->route('beneficiaries.index')->with('success', 'Beneficiary updated successfully!');
+    }
+
+    // Delete beneficiary
+    public function destroy(Beneficiary $beneficiary)
+    {
+        $beneficiary->delete();
+        return redirect()->route('beneficiaries.index')->with('success', 'Beneficiary deleted successfully!');
     }
 }
